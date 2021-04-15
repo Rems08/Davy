@@ -213,4 +213,4 @@ print("Lancement de DAVY...")
 
 token = open("token.txt", "r").readline()
 # connecter au serveur
-bot.run("ODIzNTA1MDE4ODg3MzQwMDMy.YFhy0A.0MS0BUl4_qsgvFan2yNVNTxnGa0")
+bot.run("Token")
