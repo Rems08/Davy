@@ -25,7 +25,7 @@ async def on_ready():
 @bot.command()
 async def regles(ctx):
     '''Cette commande permet d'afficher les règles du serveur Cyber-Sport'''
-    await ctx.send("Les règles:\n1. Respecter le prophète et tous les adhérants du discord\n2. Pas de double compte si vous n'en avez pas l'autorisation\n3. Pas de spam\n4. Si vous rencontrez un problème contactez un @Admin")
+    await ctx.send(f"Voir le salon <#789107176483979304> pour plus d'information concernant les règles.")
 
 #Créer la commande !ticket
 @bot.command()
@@ -64,6 +64,11 @@ async def bienvenue(ctx, nouveau_membre: discord.Member):
     pseudo = nouveau_membre.mention
     # executer le message de bienvenue
     await ctx.send(f"Bienvenue à {pseudo} sur le serveur discord ! N'oublie pas de faire !regles")
+
+@bot.command()
+async def test(ctx, message):
+    '''Commande inutile pour le moment'''
+    print(message)
 
 @bot.command()
 async def p(ctx):
@@ -129,26 +134,53 @@ async def comp(ctx, nouveau_membre1: discord.Member, nouveau_membre2: discord.Me
             gifMoyen = ["https://tenor.com/view/idk-i-dont-know-sebastian-stan-lol-wtf-gif-5364867", "https://tenor.com/view/idk-not-me-innocent-gif-5742406", "https://tenor.com/view/confused-fresh-prince-will-smith-gif-5207985", "https://tenor.com/view/stevenyeun-idk-meh-eh-shrug-gif-5140003"]
             await ctx.send(f"{gifMoyen[randint(0, len(gifMoyen) - 1)]}")
         if compatibilite >= 71:
-            gifHeureux = ["https://tenor.com/view/running-hug-embrace-i-miss-you-good-to-see-you-again-gif-15965620", "https://tenor.com/view/claire-dancing-baby-sunglasses-toddler-gif-11410651", "https://tenor.com/view/-gif-4270352", "https://tenor.com/view/hug-best-friend-one-tree-hill-peyton-sawyer-brooke-davis-gif-15326502", "https://tenor.com/view/spongebob-cartoon-friends-funny-imissyou-gif-3523153"]
+            gifHeureux = ["https://tenor.com/view/running-hug-embrace-i-miss-you-good-to-see-you-again-gif-15965620", "https://tenor.com/view/claire-dancing-baby-sunglasses-toddler-gif-11410651", "https://tenor.com/view/-gif-4270352", "https://tenor.com/view/hug-best-friend-one-tree-hill-peyton-sawyer-brooke-davis-gif-15326502", "https://tenor.com/view/spongebob-cartoon-friends-funny-imissyou-gif-3523153", "https://tenor.com/view/friends-hug-girl-friend-best-friend-comfort-gif-16708684"]
             await ctx.send(f"{gifHeureux[randint(0, len(gifHeureux) - 1)]}")
+
+@bot.command()
+async def helpMe(ctx):
+    '''Cette commande permet de tester le bot'''
+    embed=discord.Embed(title="Liste des commandes", description="**Voici la liste des commandes de DAVY:**", color=0x8a00bd)
+    embed.set_author(name="DAVY", icon_url="https://image.noelshack.com/fichiers/2021/15/4/1618484589-favpng-discord-logo-user-internet-bot.png")
+    embed.add_field(name="- !regles", value="Permet d'afficher les règles du serveur", inline=False)
+    embed.add_field(name="- !ticket", value="Permet d'envoyer un message à l'équipe de modération du serveur grâce à !ticket (votre message)", inline=True)
+    embed.add_field(name="- !signes", value="Permet d'afficher la liste des signes disponible à utiliser avec la commande horoscope", inline=True)
+    embed.add_field(name="- !horoscope", value="Permet d'afficher votre horoscope grâce à la commande !horoscope (votre signe)", inline=True)
+    embed.add_field(name="- !clash", value="Permet de clasher un membre du discord grâce à la commande !clash (mention d'un autre membre)", inline=True)
+    embed.add_field(name="- !disquettePrive", value="Permet d'envoyer un message privé à un autre membre grâce à la commande !disquettePrive (mention d'un autre membre)", inline=True)
+    embed.add_field(name="!comp", value="Compare deux utilisateurs entre eux pour vérifier si ils sont compatible utilisez !comp (mention du permier utilisateur) (mention du deuxième utilisateur)", inline=True)
+    embed.set_footer(text="#Rems")
+    await ctx.send(embed=embed)
+
+
 # détecter quand quelqu'un ajoute un emoji sur un message
 @bot.event
 async def on_raw_reaction_add(payload):
-
     emoji = payload.emoji  # recupere l'emoji
     canal = payload.channel_id  # recupere le numero du canal
     message = payload.message_id  # recupere le numero du message
+    membre = await bot.get_guild(payload.guild_id).fetch_member(payload.user_id) #récupère l'info de l'utilisateur
 
-    Dog_role = get(bot.get_guild(payload.guild_id).roles, name="🎨Artiste🎨")
-    membre = await bot.get_guild(payload.guild_id).fetch_member(payload.user_id)
-    print(emoji.name)
-    # verifier si l'emoji qu'on a ajoutée est "Capture"
-    if canal == 826810614168551435 and message == 826812016303276034 and emoji.name == "artiste":
-        print("Grade ajouté !")
-        await membre.add_roles(Dog_role)
-        await membre.send("Tu obtiens le grade Artiste !")
+    #Fonction qui ajoute un rôle à un utilisateur
+    async def ajouter_role_emoji(variableRole, nomRole, canalID, messageID, nomEmoji):
+        nameRole = get(bot.get_guild(payload.guild_id).roles, name=nomRole) #nomRole doit être un string
+        if canal == canalID and message == messageID and emoji.name == nomEmoji: #canalID et messageID sont des INT et pas des STR
+            print(f"Grade {nameRole} ajouté à {membre.name}!")
+            await membre.add_roles(nameRole)
+            await membre.send(F"Tu obtiens le grade: {nomRole} !")
 
+    #Ici, le code pour le rôle League Of Legends
+    await ajouter_role_emoji("lol_role", "LeagueOfLegend", 826810614168551435, 827137112910200852, "leagueoflegendslogo")
 
+    #Ici, le code pour le rôle artiste
+    await ajouter_role_emoji("artiste_role", "🎨Artiste🎨", 826810614168551435, 826812016303276034, "artiste")
+    
+    #Ici le code pour le rôle Rocket League
+    await ajouter_role_emoji("rocketLeague_role", "Rocket League", 826810614168551435, 827137112910200852, "rocketleaguelogo")
+
+    #Ici, le code pour le rôle Rainbow Six Siege
+    await ajouter_role_emoji("rainbowsix_role", "Rainbow Six Siege", 826810614168551435, 827137112910200852, "rainbowsixlogo")
+    
 # détecter quand quelqu'un ajoute un emoji sur un message
 @bot.event
 async def on_raw_reaction_remove(payload):
@@ -156,19 +188,29 @@ async def on_raw_reaction_remove(payload):
     emoji = payload.emoji  # recupere l'emoji
     canal = payload.channel_id  # recupere le numero du canal
     message = payload.message_id # recupere le numero du messae
-
-    Dog_role = get(bot.get_guild(payload.guild_id).roles, name="🎨Artiste🎨")
     membre = await bot.get_guild(payload.guild_id).fetch_member(payload.user_id)
 
-    # verifier si l'emoji qu'on a ajoutée est "Capture"
-    if canal == 826810614168551435 and message == 826812016303276034 and emoji.name == "artiste":
-        print("Grade supprimé !")
-        await membre.remove_roles(Dog_role)
-        await membre.send("Tu perds le grade Artiste !")
+    #Fonction qui supprime le rôle d'un utilisateur
+    async def supprimer_role_emoji(variableRole, nomRole, canalID, messageID, nomEmoji):
+        nameRole = get(bot.get_guild(payload.guild_id).roles, name=nomRole) #nomRole doit être un string
+        if canal == canalID and message == messageID and emoji.name == nomEmoji: #canalID et messageID sont des INT et pas des STR
+            print(f"Grade {nameRole}supprimé à {membre.name}!")
+            await membre.remove_roles(nameRole)
+            await membre.send(F"Tu obtiens le grade: {nomRole} !")
+    #Ici, code pour artiste 
+    await supprimer_role_emoji("artiste_role", "🎨Artiste🎨", 826810614168551435, 826812016303276034, "artiste")
+    
+    #Ici, code pour league of legends
+    await supprimer_role_emoji("lol_role", "LeagueOfLegend", 826810614168551435, 827137112910200852, "leagueoflegendslogo")
 
+    #Ici, code pour Rocket League
+    await supprimer_role_emoji("rocketLeague_role", "Rocket League", 826810614168551435, 827137112910200852, "rocketleaguelogo")
+
+    #Ici, code pour Rainbow Six Siege
+    await supprimer_role_emoji("rainbowsix_role", "Rainbow Six Siege", 826810614168551435, 827137112910200852, "rainbowsixlogo")
 # phrase
 print("Lancement de DAVY...")
 
 token = open("token.txt", "r").readline()
 # connecter au serveur
-bot.run(token)
+bot.run("ODIzNTA1MDE4ODg3MzQwMDMy.YFhy0A.0MS0BUl4_qsgvFan2yNVNTxnGa0")
