@@ -13,13 +13,13 @@ administrateur = "<@&596072853116420112>" #Identifiant du grade admin sur Cyber-
 # créer le bot
 bot = commands.Bot(command_prefix='!')
 client = discord.Client()
-
+bot.remove_command('help')
 # détecter quand le bot est pret ("allumé")
 @bot.event
 async def on_ready():
     print("Bot pret")
     await bot.change_presence(status=discord.Status.online,
-            activity=discord.Game("Rems est le plus beau"))
+            activity=discord.Game("Rems est le plus beau / !help"))
             
 # créer la commande !regles
 @bot.command()
@@ -126,10 +126,10 @@ async def comp(ctx, nouveau_membre1: discord.Member, nouveau_membre2: discord.Me
         await ctx.send("Il faut que vous indiquiez deux personnes différentes !")
     else:
         compatibilite = randint(0, 100)
-        await ctx.send(f" D'après ma boule de cristal {pseudo1} et {pseudo2} sont à {compatibilite} % compatbiles !")
+        await ctx.send(f" D'après ma boule de cristal {pseudo1} et {pseudo2} sont à {compatibilite} % compatibles !")
         if compatibilite <= 40:
             gifMechant = ["https://tenor.com/view/baby-angry-eating-mad-grumpy-gif-14328548", "https://tenor.com/view/baby-baby-boy-angry-gif-12326628", "https://tenor.com/view/brat-mad-upset-tantrum-badkid-gif-5945754", "https://media1.giphy.com/media/VI2jp6o8ojW53xmupr/giphy.gif?cid=ecf05e47akqk5rm5pfzyczewmyys6ltzfib7if3xff0j0i8z&rid=giphy.gif"]
-            await ctx.send(f"{gifMechant[randint(0, len(gifMechant))]}")
+            await ctx.send(f"{gifMechant[randint(0, len(gifMechant - 1))]}")
         if compatibilite >= 41 and compatibilite <= 70:
             gifMoyen = ["https://tenor.com/view/idk-i-dont-know-sebastian-stan-lol-wtf-gif-5364867", "https://tenor.com/view/idk-not-me-innocent-gif-5742406", "https://tenor.com/view/confused-fresh-prince-will-smith-gif-5207985", "https://tenor.com/view/stevenyeun-idk-meh-eh-shrug-gif-5140003"]
             await ctx.send(f"{gifMoyen[randint(0, len(gifMoyen) - 1)]}")
@@ -138,7 +138,7 @@ async def comp(ctx, nouveau_membre1: discord.Member, nouveau_membre2: discord.Me
             await ctx.send(f"{gifHeureux[randint(0, len(gifHeureux) - 1)]}")
 
 @bot.command()
-async def helpMe(ctx):
+async def help(ctx):
     '''Cette commande permet de tester le bot'''
     embed=discord.Embed(title="Liste des commandes", description="**Voici la liste des commandes de DAVY:**", color=0x8a00bd)
     embed.set_author(name="DAVY", icon_url="https://image.noelshack.com/fichiers/2021/15/4/1618484589-favpng-discord-logo-user-internet-bot.png")
@@ -213,4 +213,4 @@ print("Lancement de DAVY...")
 
 token = open("token.txt", "r").readline()
 # connecter au serveur
-bot.run("Token")
+bot.run("token")
