@@ -11,6 +11,8 @@ global piedsTeenWolf #Initialisation d'une variable globale qui va compter à pa
 piedsTeenWolf = 0
 global administrateur
 administrateur = "<@&596072853116420112>" #Identifiant du grade admin sur Cyber-Sport
+global rems
+rems = "<317636589897515009>"
 # créer le bot
 bot = commands.Bot(command_prefix='!') #Permettra au bot de savoir quand est-ce qu'on lui parle grâce au str de command_prefix
 client = discord.Client()
@@ -33,18 +35,19 @@ async def regles(ctx):
 @bot.command()
 async def ticket(ctx, *message):
     '''Envoie un ticket au service d'administration du serveur: faites !ticket (votre message)'''
-    global supprimerUnMessage
     channel = discord.utils.get(ctx.guild.channels, name="❔ticket-administrateur❔")
     channel_id = channel.id
-    auteur = ctx.author.mention
+    global auteurDuTicket
+    auteurDuTicket = ctx.author.mention
     if channel_id == 826437578701144114:
         await ctx.message.delete() #Supprime le message de la personne ayant rentré la commande
+        global txt
         txt = ' '.join(message) #Permet de mettre un espace entre chaque tuple de la variable message
         salon = discord.utils.get(ctx.guild.channels, name="chat-admins") #Initialise la variable salon sur le nom d'un salon dans name
         emoji = "✔"
-        global monMessage
-        monMessage = await salon.send(f"{administrateur} {auteur} **a envoyé le ticket suivant:** {txt}")
-        await monMessage.add_reaction(emoji)
+        global messageTicket
+        messageTicket = await salon.send(f"{administrateur} {auteurDuTicket} **a envoyé le ticket suivant:** {txt}")
+        await messageTicket.add_reaction(emoji)
 
 @bot.command() #Crée la commande !clash pour clasher un utilisateur random
 async def clash(ctx, nouveau_membre: discord.Member):
@@ -191,10 +194,15 @@ async def on_raw_reaction_add(payload):
     async def validerTicket(canalID, nomEmoji):
         if canal == canalID and emoji.name == nomEmoji and idUtilisateur != 823505018887340032: #canalID et messageID sont des INT et pas des STR
             print(f"{membre.name} a réglé un problème !")
-            global monMessage
-            await monMessage.delete() #Supprime le message du bot
-            await membre.send(F"Merci d'avoir réglé le problème {membre.name} !")
-            print(idUtilisateur)
+            print(membre)
+            global rems
+            global auteurDuTicket 
+            global txt
+            global messageTicket
+            await membre.send(F"{membre.name} Merci d'avoir réglé le problème de {auteurDuTicket} concernant la demande suivante: {txt}!")
+            # await rems.send(f"{member.name} a réglé un soucis de {auteurDuTicket} à propos de: {txt}")
+            await messageTicket.delete() #Supprime le message du bot
+            
     await validerTicket(675269930437836831, "✔")
 
     
