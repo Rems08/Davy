@@ -6,20 +6,22 @@ from random import*
 from discord.utils import get
 # ajouter un composant de discord.py
 from discord.ext import commands
+import time #On importe le module time pour la commande sleep
 global piedsTeenWolf #Initialisation d'une variable globale qui va compter à partir de cette dernière
-piedsTeenWolf = 83
+piedsTeenWolf = 0
 global administrateur
 administrateur = "<@&596072853116420112>" #Identifiant du grade admin sur Cyber-Sport
 # créer le bot
-bot = commands.Bot(command_prefix='!')
+bot = commands.Bot(command_prefix='!') #Permettra au bot de savoir quand est-ce qu'on lui parle grâce au str de command_prefix
 client = discord.Client()
-bot.remove_command('help')
+bot.remove_command('help') #Supprime la commande help afin de créer note propre commande
+
 # détecter quand le bot est pret ("allumé")
 @bot.event
 async def on_ready():
     print("Bot pret")
     await bot.change_presence(status=discord.Status.online,
-            activity=discord.Game("Rems est le plus beau / !help"))
+            activity=discord.Game("!help #Rems"))
             
 # créer la commande !regles
 @bot.command()
@@ -30,7 +32,8 @@ async def regles(ctx):
 #Créer la commande !ticket
 @bot.command()
 async def ticket(ctx, *message):
-    '''Envoie une un ticket au service d'administration du serveur: faites !ticket (votre message)'''
+    '''Envoie un ticket au service d'administration du serveur: faites !ticket (votre message)'''
+    global supprimerUnMessage
     channel = discord.utils.get(ctx.guild.channels, name="❔ticket-administrateur❔")
     channel_id = channel.id
     auteur = ctx.author.mention
@@ -38,8 +41,10 @@ async def ticket(ctx, *message):
         await ctx.message.delete() #Supprime le message de la personne ayant rentré la commande
         txt = ' '.join(message) #Permet de mettre un espace entre chaque tuple de la variable message
         salon = discord.utils.get(ctx.guild.channels, name="chat-admins") #Initialise la variable salon sur le nom d'un salon dans name
-        await salon.send(f"{administrateur}{auteur} **a envoyé le ticket suivant:** {txt}")
-
+        emoji = "✔"
+        global monMessage
+        monMessage = await salon.send(f"{administrateur} {auteur} **a envoyé le ticket suivant:** {txt}")
+        await monMessage.add_reaction(emoji)
 
 @bot.command() #Crée la commande !clash pour clasher un utilisateur random
 async def clash(ctx, nouveau_membre: discord.Member):
@@ -129,7 +134,7 @@ async def comp(ctx, nouveau_membre1: discord.Member, nouveau_membre2: discord.Me
         await ctx.send(f" D'après ma boule de cristal {pseudo1} et {pseudo2} sont à {compatibilite} % compatibles !")
         if compatibilite <= 40:
             gifMechant = ["https://tenor.com/view/baby-angry-eating-mad-grumpy-gif-14328548", "https://tenor.com/view/baby-baby-boy-angry-gif-12326628", "https://tenor.com/view/brat-mad-upset-tantrum-badkid-gif-5945754", "https://media1.giphy.com/media/VI2jp6o8ojW53xmupr/giphy.gif?cid=ecf05e47akqk5rm5pfzyczewmyys6ltzfib7if3xff0j0i8z&rid=giphy.gif"]
-            await ctx.send(f"{gifMechant[randint(0, len(gifMechant - 1))]}")
+            await ctx.send(f"{gifMechant[randint(0, len(gifMechant) - 1)]}")
         if compatibilite >= 41 and compatibilite <= 70:
             gifMoyen = ["https://tenor.com/view/idk-i-dont-know-sebastian-stan-lol-wtf-gif-5364867", "https://tenor.com/view/idk-not-me-innocent-gif-5742406", "https://tenor.com/view/confused-fresh-prince-will-smith-gif-5207985", "https://tenor.com/view/stevenyeun-idk-meh-eh-shrug-gif-5140003"]
             await ctx.send(f"{gifMoyen[randint(0, len(gifMoyen) - 1)]}")
@@ -160,6 +165,7 @@ async def on_raw_reaction_add(payload):
     canal = payload.channel_id  # recupere le numero du canal
     message = payload.message_id  # recupere le numero du message
     membre = await bot.get_guild(payload.guild_id).fetch_member(payload.user_id) #récupère l'info de l'utilisateur
+    idUtilisateur = payload.user_id
 
     #Fonction qui ajoute un rôle à un utilisateur
     async def ajouter_role_emoji(variableRole, nomRole, canalID, messageID, nomEmoji):
@@ -180,6 +186,17 @@ async def on_raw_reaction_add(payload):
 
     #Ici, le code pour le rôle Rainbow Six Siege
     await ajouter_role_emoji("rainbowsix_role", "Rainbow Six Siege", 826810614168551435, 827137112910200852, "rainbowsixlogo")
+    
+    #Fonction qui suprime le message de ticket traité 
+    async def validerTicket(canalID, nomEmoji):
+        if canal == canalID and emoji.name == nomEmoji and idUtilisateur != 823505018887340032: #canalID et messageID sont des INT et pas des STR
+            print(f"{membre.name} a réglé un problème !")
+            global monMessage
+            await monMessage.delete() #Supprime le message du bot
+            await membre.send(F"Merci d'avoir réglé le problème {membre.name} !")
+            print(idUtilisateur)
+    await validerTicket(675269930437836831, "✔")
+
     
 # détecter quand quelqu'un ajoute un emoji sur un message
 @bot.event
@@ -211,6 +228,8 @@ async def on_raw_reaction_remove(payload):
 # phrase
 print("Lancement de DAVY...")
 
-token = open("token.txt", "r").readline()
+
+
+token = open("token.txt", "r").read()
 # connecter au serveur
-bot.run("token")
+bot.run(token)
