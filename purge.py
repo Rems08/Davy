@@ -19,6 +19,7 @@ async def on_ready():
     print("⚠⚠BE CAREFUL WITH THIS BOT⚠⚠")
     await bot.change_presence(status=discord.Status.online,
             activity=discord.Game("#Rems08"))
+    print("⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠")
 
 @bot.command()
 async def create_channels(ctx, number):
