@@ -64,4 +64,4 @@ print("Lancement de 💀DAVE💀...")
 
 token = open("token.txt", "r").read() #Lis la valeur dans le fichier txt token.txt
 # connecter au serveur
-bot.run("ODI3OTU4NzgzODIwOTU1NjQ4.YGimtA.Mq0NGFk5L230ymGz5UXDRYoRdB8") #Mettre "Token pour lancer le bot"
+bot.run("TOKEN") #Mettre "Token pour lancer le bot"
